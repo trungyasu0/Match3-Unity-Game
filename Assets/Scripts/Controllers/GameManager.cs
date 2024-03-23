@@ -44,6 +44,8 @@ public class GameManager : MonoBehaviour
     private UIMainManager m_uiMenu;
 
     private LevelCondition m_levelCondition;
+    
+    private eLevelMode _currentLevelMode;
 
     private void Awake()
     {
@@ -99,6 +101,7 @@ public class GameManager : MonoBehaviour
 
         m_levelCondition.ConditionCompleteEvent += GameOver;
 
+        _currentLevelMode = mode;
         State = eStateGame.GAME_STARTED;
     }
 
@@ -115,6 +118,21 @@ public class GameManager : MonoBehaviour
             Destroy(m_boardController.gameObject);
             m_boardController = null;
         }
+    }
+    
+    public void ResetLevel()
+    {
+        //clear level condition
+        if(m_levelCondition != null)
+        {
+            m_levelCondition.ConditionCompleteEvent -= GameOver;
+
+            Destroy(m_levelCondition);
+            m_levelCondition = null;
+        }
+        
+        ClearLevel();
+        LoadLevel(_currentLevelMode);
     }
 
     private IEnumerator WaitBoardController()
