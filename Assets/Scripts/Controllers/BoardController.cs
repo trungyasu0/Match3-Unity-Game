@@ -151,8 +151,8 @@ public class BoardController : MonoBehaviour
         }
         else
         {
-            List<Cell> cells1 = GetMatches(cell1);
-            List<Cell> cells2 = GetMatches(cell2);
+            var cells1 = GetMatches(cell1);
+            var cells2 = GetMatches(cell2);
 
             List<Cell> matches = new List<Cell>();
             matches.AddRange(cells1);
@@ -200,21 +200,23 @@ public class BoardController : MonoBehaviour
         }
     }
 
-    private List<Cell> GetMatches(Cell cell)
+    private HashSet<Cell> GetMatches(Cell cell)
     {
-        List<Cell> listHor = m_board.GetHorizontalMatches(cell);
+        //using hashset here: 
+        HashSet<Cell> listHor = new HashSet<Cell>(m_board.GetHorizontalMatches(cell));
         if (listHor.Count < m_gameSettings.MatchesMin)
         {
             listHor.Clear();
         }
+        HashSet<Cell> listVert = new HashSet<Cell>(m_board.GetVerticalMatches(cell));
 
-        List<Cell> listVert = m_board.GetVerticalMatches(cell);
         if (listVert.Count < m_gameSettings.MatchesMin)
         {
             listVert.Clear();
         }
 
-        return listHor.Concat(listVert).Distinct().ToList();
+        listHor.UnionWith(listVert);
+        return listHor;
     }
 
     private void CollapseMatches(List<Cell> matches, Cell cellEnd)
