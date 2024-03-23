@@ -12,7 +12,7 @@ public class Item
     public Transform View { get; private set; }
 
 
-    public virtual void SetView()
+    public virtual GameObject SetView()
     {
         string prefabname = GetPrefabName();
 
@@ -21,9 +21,13 @@ public class Item
             GameObject prefab = Resources.Load<GameObject>(prefabname);
             if (prefab)
             {
-                View = GameObject.Instantiate(prefab).transform;
+                var go = GameObject.Instantiate(prefab);
+                View = go.transform;
+                return go;
             }
         }
+
+        return null;
     }
 
     protected virtual string GetPrefabName() { return string.Empty; }

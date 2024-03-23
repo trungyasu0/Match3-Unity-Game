@@ -59,4 +59,13 @@ public class NormalItem : Item
 
         return it != null && it.ItemType == this.ItemType;
     }
+    
+    public override GameObject SetView()
+    {
+        GameObject go = base.SetView();
+        if (go == null) return null;
+        var sp = go.GetComponent<SpriteRenderer>();
+        sp.sprite = GameConfig.Instance.GetItemConfig().GetFishItemSprite(ItemType).sprite;
+        return go;
+    }
 }
