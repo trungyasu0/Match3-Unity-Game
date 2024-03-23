@@ -135,7 +135,11 @@ public class Board
         }
     }
 
-
+  
+    // Other properties and methods...
+    
+    
+    //Edit the FillGapsWithNewItems method
     internal void FillGapsWithNewItems()
     {
         for (int x = 0; x < boardSizeX; x++)
@@ -144,10 +148,39 @@ public class Board
             {
                 Cell cell = m_cells[x, y];
                 if (!cell.IsEmpty) continue;
+                
+                // Get the types of the items in the surrounding cells
+                List<NormalItem.eNormalType> surroundingTypes = new List<NormalItem.eNormalType>();
+                if (cell.NeighbourUp != null && cell.NeighbourUp.Item is NormalItem updateItem)
+                    surroundingTypes.Add(updateItem.ItemType);
+                if (cell.NeighbourBottom != null && cell.NeighbourBottom.Item is NormalItem bottomItem)
+                    surroundingTypes.Add(bottomItem.ItemType);
+                if (cell.NeighbourLeft != null && cell.NeighbourLeft.Item is NormalItem leftItem)
+                    surroundingTypes.Add(leftItem.ItemType);
+                if (cell.NeighbourRight != null && cell.NeighbourRight.Item is NormalItem rightItem)
+                    surroundingTypes.Add(rightItem.ItemType);
 
+                // Get the count of each type of item on the board
+                Dictionary<NormalItem.eNormalType, int> typeCounts = Enum.GetValues(typeof(NormalItem.eNormalType))
+                    .Cast<NormalItem.eNormalType>()
+                    .ToDictionary(type => type, type => 0);
+                for (int i = 0; i < boardSizeX; i++)
+                {
+                    for (int j = 0; j < boardSizeY; j++)
+                    {
+                        if (m_cells[i, j].Item is NormalItem)
+                            typeCounts[((NormalItem)m_cells[i, j].Item).ItemType]++;
+                    }
+                }
+                // Exclude the types in the surrounding cells from the count list
+                foreach (var type in surroundingTypes)
+                    typeCounts.Remove(type);
+
+                // Choose the type with the least count
+                var leastCountType = typeCounts.Aggregate((l, r) => l.Value < r.Value ? l : r).Key;
                 NormalItem item = new NormalItem();
 
-                item.SetType(Utils.GetRandomNormalType());
+                item.SetType(leastCountType);
                 item.SetView();
                 item.SetViewRoot(m_root);
 
